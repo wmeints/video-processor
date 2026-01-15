@@ -34,29 +34,19 @@ def project_setup(tmp_path, test_video_path, test_thumbnail_path):
     return tmp_path
 
 
-def test_get_thumbnail_path_finds_png(tmp_path):
+@pytest.mark.parametrize("theme,extension", [
+    ("dark", "png"),
+    ("light", "jpg"),
+])
+def test_get_thumbnail_path_finds_image(tmp_path, theme, extension):
     # Arrange
     thumbnails_dir = tmp_path / "thumbnails"
     thumbnails_dir.mkdir()
-    thumbnail = thumbnails_dir / "dark.png"
+    thumbnail = thumbnails_dir / f"{theme}.{extension}"
     thumbnail.touch()
 
     # Act
-    result = get_thumbnail_path(tmp_path, "dark")
-
-    # Assert
-    assert result == thumbnail
-
-
-def test_get_thumbnail_path_finds_jpg(tmp_path):
-    # Arrange
-    thumbnails_dir = tmp_path / "thumbnails"
-    thumbnails_dir.mkdir()
-    thumbnail = thumbnails_dir / "light.jpg"
-    thumbnail.touch()
-
-    # Act
-    result = get_thumbnail_path(tmp_path, "light")
+    result = get_thumbnail_path(tmp_path, theme)
 
     # Assert
     assert result == thumbnail

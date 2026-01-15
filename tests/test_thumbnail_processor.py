@@ -1,12 +1,31 @@
 """Tests for the thumbnail_processor module."""
 
+import pytest
 from PIL import Image
 
 from video_processor.thumbnail_processor import (
     add_thumbnail_to_video,
     create_thumbnail_with_text,
 )
-from video_processor.video_editor import get_video_duration
+from video_processor.video_editor import get_video_dimensions, get_video_duration, trim_video
+
+
+@pytest.fixture
+def prepared_video_and_thumbnail(test_thumbnail_path, test_video_path, processing_dir):
+    """Prepare a trimmed video and processed thumbnail for add_thumbnail_to_video tests."""
+    trimmed_video = trim_video(test_video_path, processing_dir, end_at="00:05")
+    width, height = get_video_dimensions(trimmed_video)
+
+    processed_thumbnail = create_thumbnail_with_text(
+        thumbnail_path=test_thumbnail_path,
+        title="Test",
+        subtitle="Subtitle",
+        output_path=processing_dir,
+        video_width=width,
+        video_height=height,
+    )
+
+    return trimmed_video, processed_thumbnail
 
 
 def test_create_thumbnail_with_text_creates_file(test_thumbnail_path, processing_dir):
@@ -63,7 +82,6 @@ def test_create_thumbnail_with_text_is_rgba(test_thumbnail_path, processing_dir)
 
 def test_create_thumbnail_uses_video_dimensions(test_thumbnail_path, test_video_path, processing_dir):
     # Arrange - use actual video dimensions
-    from video_processor.video_editor import get_video_dimensions
     width, height = get_video_dimensions(test_video_path)
 
     # Act
@@ -82,22 +100,9 @@ def test_create_thumbnail_uses_video_dimensions(test_thumbnail_path, test_video_
         assert img.height == height
 
 
-def test_add_thumbnail_to_video_creates_output(test_thumbnail_path, test_video_path, processing_dir):
-    # Arrange - first create a processed thumbnail and trim the video to make test faster
-    from video_processor.video_editor import trim_video, get_video_dimensions
-
-    # Trim to just 5 seconds to speed up test
-    trimmed_video = trim_video(test_video_path, processing_dir, end_at="00:05")
-    width, height = get_video_dimensions(trimmed_video)
-
-    processed_thumbnail = create_thumbnail_with_text(
-        thumbnail_path=test_thumbnail_path,
-        title="Test",
-        subtitle="Subtitle",
-        output_path=processing_dir,
-        video_width=width,
-        video_height=height,
-    )
+def test_add_thumbnail_to_video_creates_output(prepared_video_and_thumbnail, processing_dir):
+    # Arrange
+    trimmed_video, processed_thumbnail = prepared_video_and_thumbnail
 
     # Act
     result = add_thumbnail_to_video(
@@ -112,22 +117,10 @@ def test_add_thumbnail_to_video_creates_output(test_thumbnail_path, test_video_p
     assert result.name == "video_with_thumbnail.mp4"
 
 
-def test_add_thumbnail_increases_duration(test_thumbnail_path, test_video_path, processing_dir):
+def test_add_thumbnail_increases_duration(prepared_video_and_thumbnail, processing_dir):
     # Arrange
-    from video_processor.video_editor import trim_video, get_video_dimensions
-
+    trimmed_video, processed_thumbnail = prepared_video_and_thumbnail
     thumbnail_duration = 3.0
-    trimmed_video = trim_video(test_video_path, processing_dir, end_at="00:05")
-    width, height = get_video_dimensions(trimmed_video)
-
-    processed_thumbnail = create_thumbnail_with_text(
-        thumbnail_path=test_thumbnail_path,
-        title="Test",
-        subtitle="Subtitle",
-        output_path=processing_dir,
-        video_width=width,
-        video_height=height,
-    )
 
     # Act
     result = add_thumbnail_to_video(
