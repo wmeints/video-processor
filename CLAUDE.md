@@ -59,6 +59,73 @@ src/video_processor/
   thumbnail_processor.py
 ```
 
+## Testing
+
+### Running Tests
+
+```bash
+# Run all tests
+uv run pytest
+
+# Run tests with coverage
+uv run pytest --cov=video_processor
+
+# Run a specific test file
+uv run pytest tests/test_audio_extractor.py -v
+
+# Run a specific test function
+uv run pytest tests/test_audio_extractor.py::test_extract_audio_creates_wav_file -v
+```
+
+### Test Structure
+
+Tests mirror the module structure in `src/video_processor/`:
+
+```
+tests/
+  conftest.py              # Shared fixtures
+  test_audio_extractor.py
+  test_video_editor.py
+  test_content_generator.py
+  test_thumbnail_processor.py
+  test_transcriber.py
+  test_cli.py
+```
+
+### Writing Tests
+
+- Use **fixtures** for setting up mocks and test data (defined in `conftest.py`)
+- Use **arrange-act-assert** pattern in all tests
+- Use **test functions only**, no test classes
+- Use **plain `assert` statements** for assertions
+
+Example test structure:
+
+```python
+def test_something_does_expected_behavior(mock_dependency, sample_data):
+    # Arrange
+    expected = "expected result"
+
+    # Act
+    result = function_under_test(sample_data)
+
+    # Assert
+    assert result == expected
+```
+
+### Available Fixtures
+
+Common fixtures are defined in `tests/conftest.py`:
+
+- `sample_video_path` - Creates a fake video file path
+- `processing_dir` - Creates a processing directory for intermediate files
+- `sample_transcription` - Sample transcription text
+- `sample_metadata` - Sample metadata dictionary
+- `mock_ffmpeg` - Mocks ffmpeg for audio_extractor tests
+- `mock_ffmpeg_editor` - Mocks ffmpeg for video_editor tests
+- `mock_settings` - Mocks settings/config loading
+- `sample_thumbnail_path` - Creates a sample thumbnail file
+
 ## Dependencies
 
 - Requires FFmpeg installed system-wide (`brew install ffmpeg`)
