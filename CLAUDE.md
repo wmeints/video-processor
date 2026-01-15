@@ -126,6 +126,39 @@ Common fixtures are defined in `tests/conftest.py`:
 - `mock_settings` - Mocks settings/config loading
 - `sample_thumbnail_path` - Creates a sample thumbnail file
 
+## Code Style
+
+### Docstrings
+
+Use **NumPy-style docstrings** for all functions and classes:
+
+```python
+def function_name(param1: str, param2: int = 10) -> bool:
+    """
+    Short description of the function.
+
+    Longer description if needed, explaining the function's behavior
+    in more detail.
+
+    Parameters
+    ----------
+    param1 : str
+        Description of param1.
+    param2 : int, optional
+        Description of param2 (default is 10).
+
+    Returns
+    -------
+    bool
+        Description of return value.
+
+    Raises
+    ------
+    ValueError
+        When param1 is invalid.
+    """
+```
+
 ## Dependencies
 
 - Requires FFmpeg installed system-wide (`brew install ffmpeg`)
