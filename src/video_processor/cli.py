@@ -188,7 +188,7 @@ def process(
         # Step 2: Transcribe (unless skipped)
         if not skip_transcription:
             console.print(Panel("[bold]Step 2/5: Transcribing Audio[/bold]"))
-            transcription = transcribe_audio(audio_path, processing_dir)
+            transcription = transcribe_audio(audio_path, processing_dir, lang=lang)
         else:
             console.print(Panel("[bold]Step 2/5: Skipping Transcription[/bold]"))
             transcription = title or "Video Content"

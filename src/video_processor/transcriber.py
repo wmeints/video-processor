@@ -1,4 +1,4 @@
-"""Transcription module using Nvidia Parakeet ASR model."""
+"""Transcription module using Nvidia Parakeet ASR model (English) and Whisper (Dutch)."""
 
 from pathlib import Path
 
@@ -8,7 +8,8 @@ from rich.console import Console
 console = Console()
 
 # Global model cache to avoid reloading
-_model = None
+_parakeet_model = None
+_whisper_model = None
 
 
 def get_parakeet_model():
@@ -18,9 +19,9 @@ def get_parakeet_model():
     Returns:
         The loaded Parakeet model
     """
-    global _model
+    global _parakeet_model
 
-    if _model is None:
+    if _parakeet_model is None:
         console.print("[blue]Loading Nvidia Parakeet model...[/blue]")
 
         try:
@@ -38,56 +39,88 @@ def get_parakeet_model():
                 device = "cpu"
                 console.print("[yellow]Using CPU for inference[/yellow]")
 
-            _model = nemo_asr.models.ASRModel.from_pretrained(model_name)
+            _parakeet_model = nemo_asr.models.ASRModel.from_pretrained(model_name)
 
             # Move model to appropriate device
             if device == "cpu":
-                _model = _model.cpu()
+                _parakeet_model = _parakeet_model.cpu()
 
-            _model.eval()
+            _parakeet_model.eval()
             console.print("[green]✓ Parakeet model loaded successfully[/green]")
 
         except Exception as e:
             console.print(f"[red]Error loading Parakeet model:[/red] {e}")
             raise RuntimeError(f"Failed to load Parakeet model: {e}")
 
-    return _model
+    return _parakeet_model
 
 
-def transcribe_audio(audio_path: Path, output_path: Path) -> str:
+def get_whisper_model():
     """
-    Transcribe audio file using Nvidia Parakeet.
+    Load and cache the Whisper model for multilingual transcription.
+
+    Returns:
+        The loaded Whisper model
+    """
+    global _whisper_model
+
+    if _whisper_model is None:
+        console.print("[blue]Loading Whisper model...[/blue]")
+
+        try:
+            import whisper
+
+            # Use medium model for good balance of speed and accuracy
+            _whisper_model = whisper.load_model("medium")
+            console.print("[green]✓ Whisper model loaded successfully[/green]")
+
+        except Exception as e:
+            console.print(f"[red]Error loading Whisper model:[/red] {e}")
+            raise RuntimeError(f"Failed to load Whisper model: {e}")
+
+    return _whisper_model
+
+
+def transcribe_audio(audio_path: Path, output_path: Path, lang: str = "en") -> str:
+    """
+    Transcribe audio file using Nvidia Parakeet (English) or Whisper (Dutch/other).
 
     Args:
         audio_path: Path to the audio file (WAV format, 16kHz)
         output_path: Path where transcription will be saved
+        lang: Language code ('en' for English, 'nl' for Dutch)
 
     Returns:
         The transcription text
     """
-    console.print(f"[blue]Transcribing audio:[/blue] {audio_path}")
-
-    model = get_parakeet_model()
+    console.print(f"[blue]Transcribing audio ({lang}):[/blue] {audio_path}")
 
     try:
-        # Transcribe the audio file
-        transcriptions = model.transcribe([str(audio_path)])
+        if lang == "en":
+            # Use Parakeet for English
+            model = get_parakeet_model()
+            transcriptions = model.transcribe([str(audio_path)])
 
-        if isinstance(transcriptions, list) and len(transcriptions) > 0:
-            # Handle different return formats
-            if hasattr(transcriptions[0], 'text'):
-                transcription = transcriptions[0].text
+            if isinstance(transcriptions, list) and len(transcriptions) > 0:
+                if hasattr(transcriptions[0], "text"):
+                    transcription = transcriptions[0].text
+                else:
+                    transcription = transcriptions[0]
             else:
-                transcription = transcriptions[0]
+                transcription = str(transcriptions)
         else:
-            transcription = str(transcriptions)
+            # Use Whisper for Dutch and other languages
+            model = get_whisper_model()
+            result = model.transcribe(str(audio_path), language=lang)
+            transcription = result["text"]
 
         # Save transcription to file
         transcription_file = output_path / "transcription.txt"
         transcription_file.write_text(transcription, encoding="utf-8")
 
         console.print(f"[green]✓ Transcription saved to:[/green] {transcription_file}")
-        console.print(f"[dim]Transcription preview: {transcription[:200]}...[/dim]")
+        preview = transcription[:200] + "..." if len(transcription) > 200 else transcription
+        console.print(f"[dim]Transcription preview: {preview}[/dim]")
 
         return transcription
 
