@@ -72,7 +72,7 @@ def get_thumbnail_path(project_root: Path, theme: str) -> Path:
         available = list(thumbnails_dir.glob("*.jpg")) + list(thumbnails_dir.glob("*.png"))
         available_names = [p.stem for p in available]
         raise FileNotFoundError(
-            f"Theme '{theme}' not found. Looking for: thumbnails/{theme}.jpg\n"
+            f"Theme '{theme}' not found. Looking for: thumbnails/{theme}.jpg or .png\n"
             f"Available themes: {', '.join(available_names) if available_names else 'none'}"
         )
 
@@ -88,7 +88,7 @@ def process(
     theme: str = typer.Option(
         ...,
         "--theme",
-        help="Theme name for thumbnail background (looks for thumbnails/<theme>.jpg)"
+        help="Theme name for thumbnail background (looks for thumbnails/<theme>.jpg or .png)"
     ),
     title: Optional[str] = typer.Option(
         None,
@@ -162,7 +162,7 @@ def process(
         thumbnail_path = get_thumbnail_path(project_root, theme)
     except FileNotFoundError as e:
         console.print(f"[red]Error:[/red] {e}")
-        console.print(f"[dim]Create a thumbnails folder and add your theme images (e.g., thumbnails/dark.jpg)[/dim]")
+        console.print(f"[dim]Create a thumbnails folder and add your theme images (e.g., thumbnails/dark.jpg or dark.png)[/dim]")
         raise typer.Exit(code=1)
 
     console.print(f"\n[bold]Input video:[/bold] {video_path}")
