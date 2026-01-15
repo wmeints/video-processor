@@ -11,13 +11,16 @@ from video_processor.video_editor import (
 )
 
 
-@pytest.mark.parametrize("timestamp,expected", [
-    ("01:30", 90.0),
-    ("00:00", 0.0),
-    ("00:45", 45.0),
-    ("05:00", 300.0),
-    ("5:30", 330.0),
-])
+@pytest.mark.parametrize(
+    "timestamp,expected",
+    [
+        ("01:30", 90.0),
+        ("00:00", 0.0),
+        ("00:45", 45.0),
+        ("05:00", 300.0),
+        ("5:30", 330.0),
+    ],
+)
 def test_parse_timestamp(timestamp, expected):
     assert parse_timestamp(timestamp) == expected
 
@@ -32,12 +35,15 @@ def test_parse_timestamp_invalid_seconds_raises_error():
         parse_timestamp("01:60")
 
 
-@pytest.mark.parametrize("seconds,expected", [
-    (90, "01:30"),
-    (0, "00:00"),
-    (45, "00:45"),
-    (300, "05:00"),
-])
+@pytest.mark.parametrize(
+    "seconds,expected",
+    [
+        (90, "01:30"),
+        (0, "00:00"),
+        (45, "00:45"),
+        (300, "05:00"),
+    ],
+)
 def test_format_timestamp(seconds, expected):
     assert format_timestamp(seconds) == expected
 

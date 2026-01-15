@@ -31,7 +31,9 @@ def test_extract_audio_uses_custom_sample_rate(test_video_path, processing_dir):
     custom_sample_rate = 22050
 
     # Act
-    result = extract_audio(test_video_path, processing_dir, sample_rate=custom_sample_rate)
+    result = extract_audio(
+        test_video_path, processing_dir, sample_rate=custom_sample_rate
+    )
 
     # Assert
     with wave.open(str(result), "rb") as wav_file:

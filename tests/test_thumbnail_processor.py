@@ -7,7 +7,11 @@ from video_processor.thumbnail_processor import (
     add_thumbnail_to_video,
     create_thumbnail_with_text,
 )
-from video_processor.video_editor import get_video_dimensions, get_video_duration, trim_video
+from video_processor.video_editor import (
+    get_video_dimensions,
+    get_video_duration,
+    trim_video,
+)
 
 
 @pytest.fixture
@@ -44,7 +48,9 @@ def test_create_thumbnail_with_text_creates_file(test_thumbnail_path, processing
     assert result.name == "thumbnail_with_text.png"
 
 
-def test_create_thumbnail_with_text_correct_dimensions(test_thumbnail_path, processing_dir):
+def test_create_thumbnail_with_text_correct_dimensions(
+    test_thumbnail_path, processing_dir
+):
     # Arrange
     width, height = 1920, 1080
 
@@ -80,7 +86,9 @@ def test_create_thumbnail_with_text_is_rgba(test_thumbnail_path, processing_dir)
         assert img.mode == "RGBA"
 
 
-def test_create_thumbnail_uses_video_dimensions(test_thumbnail_path, test_video_path, processing_dir):
+def test_create_thumbnail_uses_video_dimensions(
+    test_thumbnail_path, test_video_path, processing_dir
+):
     # Arrange - use actual video dimensions
     width, height = get_video_dimensions(test_video_path)
 
@@ -100,7 +108,9 @@ def test_create_thumbnail_uses_video_dimensions(test_thumbnail_path, test_video_
         assert img.height == height
 
 
-def test_add_thumbnail_to_video_creates_output(prepared_video_and_thumbnail, processing_dir):
+def test_add_thumbnail_to_video_creates_output(
+    prepared_video_and_thumbnail, processing_dir
+):
     # Arrange
     trimmed_video, processed_thumbnail = prepared_video_and_thumbnail
 
@@ -133,4 +143,6 @@ def test_add_thumbnail_increases_duration(prepared_video_and_thumbnail, processi
     # Assert - verify output was created and has reasonable duration
     # (exact duration verification is complex due to re-encoding and keyframes)
     final_duration = get_video_duration(result)
-    assert final_duration >= thumbnail_duration  # At minimum, has the thumbnail duration
+    assert (
+        final_duration >= thumbnail_duration
+    )  # At minimum, has the thumbnail duration

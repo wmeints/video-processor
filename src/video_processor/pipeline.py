@@ -69,7 +69,9 @@ def step_generate_metadata(ctx: ProcessingContext, transcription: str) -> VideoM
     if ctx.skip_transcription and ctx.title:
         generated = {"title": ctx.title, "description": ctx.subtitle or "Video content"}
     else:
-        generated = generate_content_metadata(transcription, ctx.processing_dir, lang=ctx.lang)
+        generated = generate_content_metadata(
+            transcription, ctx.processing_dir, lang=ctx.lang
+        )
 
     return VideoMetadata(
         title=ctx.title or generated["title"],
@@ -89,13 +91,17 @@ def step_trim_video(ctx: ProcessingContext) -> Path:
             end_at=ctx.end_at,
         )
 
-    console.print(Panel("[bold]Step 4/5: Skipping Trim (no timestamps provided)[/bold]"))
+    console.print(
+        Panel("[bold]Step 4/5: Skipping Trim (no timestamps provided)[/bold]")
+    )
     trimmed_video = ctx.processing_dir / "trimmed_video.mp4"
     shutil.copy2(ctx.video_path, trimmed_video)
     return trimmed_video
 
 
-def step_add_thumbnail(ctx: ProcessingContext, video_path: Path, metadata: VideoMetadata) -> Path:
+def step_add_thumbnail(
+    ctx: ProcessingContext, video_path: Path, metadata: VideoMetadata
+) -> Path:
     """Create and add thumbnail to video."""
     console.print(Panel("[bold]Step 5/5: Adding Thumbnail[/bold]"))
 
@@ -120,7 +126,9 @@ def step_add_thumbnail(ctx: ProcessingContext, video_path: Path, metadata: Video
     )
 
 
-def save_output(ctx: ProcessingContext, final_video: Path, metadata: VideoMetadata) -> Path:
+def save_output(
+    ctx: ProcessingContext, final_video: Path, metadata: VideoMetadata
+) -> Path:
     """Copy final video and metadata to output directory."""
     slugified_title = slugify(metadata.title, max_length=50)
     output_filename = f"{ctx.timestamp}_{slugified_title}.mp4"

@@ -1,6 +1,7 @@
 """Content generation module using LangChain + Claude for titles and descriptions."""
 
 import json
+from functools import cache
 from pathlib import Path
 
 from langchain_anthropic import ChatAnthropic
@@ -12,6 +13,8 @@ from .settings import load_settings
 
 console = Console()
 
+PROMPTS_DIR = Path(__file__).parent / "prompts"
+
 
 class VideoMetadata(BaseModel):
     """Structured output for video metadata."""
@@ -20,32 +23,32 @@ class VideoMetadata(BaseModel):
     description: str = Field(description="Video description, 1-2 sentences")
 
 
-PROMPTS = {
-    "nl": {
-        "system": "Je genereert video metadata van transcripties. Schrijf altijd in het Nederlands.",
-        "user": """Genereer een titel en beschrijving voor deze video op basis van de transcriptie.
+@cache
+def load_prompts(lang: str) -> dict[str, str]:
+    """
+    Load prompts for a given language from the prompts directory.
 
-Richtlijnen:
-- Titel: Houd het kort en pakkend, maximaal 140 karakters
-- Beschrijving: 1-2 zinnen die de inhoud van de video samenvatten
-- Schrijf in het Nederlands
+    Parameters
+    ----------
+    lang : str
+        Language code ('nl' or 'en').
 
-Transcriptie:
-{transcription}""",
-    },
-    "en": {
-        "system": "You generate video metadata from transcriptions. Always write in English.",
-        "user": """Generate a title and description for this video based on its transcription.
+    Returns
+    -------
+    dict[str, str]
+        Dictionary with 'system' and 'user' prompt strings.
+    """
+    system_file = PROMPTS_DIR / f"{lang}_system.md"
+    user_file = PROMPTS_DIR / f"{lang}_user.md"
 
-Guidelines:
-- Title: Keep it short and engaging, maximum 140 characters
-- Description: 1-2 sentences summarizing the video content
-- Write in English
+    if not system_file.exists():
+        system_file = PROMPTS_DIR / "nl_system.md"
+        user_file = PROMPTS_DIR / "nl_user.md"
 
-Transcription:
-{transcription}""",
-    },
-}
+    return {
+        "system": system_file.read_text(encoding="utf-8").strip(),
+        "user": user_file.read_text(encoding="utf-8").strip(),
+    }
 
 
 def generate_content_metadata(
@@ -68,7 +71,9 @@ def generate_content_metadata(
     dict[str, str]
         Dictionary with 'title' and 'description' keys.
     """
-    console.print(f"[blue]Generating title and description with Claude ({lang})...[/blue]")
+    console.print(
+        f"[blue]Generating title and description with Claude ({lang})...[/blue]"
+    )
 
     settings = load_settings()
 
@@ -80,7 +85,7 @@ def generate_content_metadata(
 
     structured_llm = llm.with_structured_output(VideoMetadata)
 
-    lang_prompts = PROMPTS.get(lang, PROMPTS["nl"])
+    lang_prompts = load_prompts(lang)
     prompt = ChatPromptTemplate.from_messages(
         [
             ("system", lang_prompts["system"]),

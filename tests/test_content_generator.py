@@ -10,9 +10,10 @@ from video_processor.content_generator import VideoMetadata, generate_content_me
 @pytest.fixture
 def mock_claude_chain():
     """Mock the entire LangChain chain for content generation."""
-    with patch("video_processor.content_generator.ChatAnthropic") as mock_anthropic, \
-         patch("video_processor.content_generator.ChatPromptTemplate") as mock_prompt:
-
+    with (
+        patch("video_processor.content_generator.ChatAnthropic") as mock_anthropic,
+        patch("video_processor.content_generator.ChatPromptTemplate") as mock_prompt,
+    ):
         # Create mock chain that returns VideoMetadata
         mock_llm = MagicMock()
         mock_anthropic.return_value = mock_llm
@@ -30,12 +31,14 @@ def mock_claude_chain():
         yield mock_chain
 
 
-def test_generate_content_metadata_returns_dict(mock_settings, mock_claude_chain, processing_dir):
+def test_generate_content_metadata_returns_dict(
+    mock_settings, mock_claude_chain, processing_dir
+):
     # Arrange
     transcription = "This video explains how to use GitHub Copilot skills to enhance your coding workflow."
     mock_claude_chain.invoke.return_value = VideoMetadata(
         title="Using GitHub Copilot Skills",
-        description="Learn how to enhance your coding workflow with Copilot skills."
+        description="Learn how to enhance your coding workflow with Copilot skills.",
     )
 
     # Act
@@ -48,12 +51,14 @@ def test_generate_content_metadata_returns_dict(mock_settings, mock_claude_chain
     assert result["title"] == "Using GitHub Copilot Skills"
 
 
-def test_generate_content_metadata_saves_json_file(mock_settings, mock_claude_chain, processing_dir):
+def test_generate_content_metadata_saves_json_file(
+    mock_settings, mock_claude_chain, processing_dir
+):
     # Arrange
     transcription = "This is a test transcription about video processing."
     mock_claude_chain.invoke.return_value = VideoMetadata(
         title="Video Processing Guide",
-        description="A comprehensive guide to video processing techniques."
+        description="A comprehensive guide to video processing techniques.",
     )
 
     # Act
@@ -64,16 +69,19 @@ def test_generate_content_metadata_saves_json_file(mock_settings, mock_claude_ch
     assert metadata_file.exists()
 
     import json
+
     content = json.loads(metadata_file.read_text())
     assert content["title"] == "Video Processing Guide"
 
 
-def test_generate_content_metadata_dutch_language(mock_settings, mock_claude_chain, processing_dir):
+def test_generate_content_metadata_dutch_language(
+    mock_settings, mock_claude_chain, processing_dir
+):
     # Arrange
     transcription = "Dit is een test transcriptie over video verwerking."
     mock_claude_chain.invoke.return_value = VideoMetadata(
         title="Video Verwerking Handleiding",
-        description="Een complete handleiding voor video verwerking technieken."
+        description="Een complete handleiding voor video verwerking technieken.",
     )
 
     # Act
@@ -83,7 +91,9 @@ def test_generate_content_metadata_dutch_language(mock_settings, mock_claude_cha
     assert result["title"] == "Video Verwerking Handleiding"
 
 
-def test_generate_content_metadata_with_realistic_transcription(mock_settings, mock_claude_chain, processing_dir):
+def test_generate_content_metadata_with_realistic_transcription(
+    mock_settings, mock_claude_chain, processing_dir
+):
     # Arrange - use a realistic transcription snippet
     transcription = """
     Welcome to this video about GitHub Copilot skills. Today I'm going to show you
@@ -93,7 +103,7 @@ def test_generate_content_metadata_with_realistic_transcription(mock_settings, m
     """
     mock_claude_chain.invoke.return_value = VideoMetadata(
         title="Creating Custom GitHub Copilot Skills",
-        description="Learn how to create and share custom Copilot skills for improved productivity."
+        description="Learn how to create and share custom Copilot skills for improved productivity.",
     )
 
     # Act

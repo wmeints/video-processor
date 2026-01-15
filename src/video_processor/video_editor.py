@@ -29,7 +29,7 @@ def parse_timestamp(timestamp: str) -> float:
     ValueError
         If timestamp format is invalid.
     """
-    pattern = r'^(\d{1,2}):(\d{2})$'
+    pattern = r"^(\d{1,2}):(\d{2})$"
     match = re.match(pattern, timestamp)
 
     if not match:
@@ -41,9 +41,7 @@ def parse_timestamp(timestamp: str) -> float:
     seconds = int(match.group(2))
 
     if seconds >= 60:
-        raise ValueError(
-            f"Invalid seconds value: {seconds}. Seconds must be 0-59."
-        )
+        raise ValueError(f"Invalid seconds value: {seconds}. Seconds must be 0-59.")
 
     return minutes * 60 + seconds
 
@@ -71,7 +69,7 @@ def trim_video(
     video_path: Path,
     output_path: Path,
     start_from: Optional[str] = None,
-    end_at: Optional[str] = None
+    end_at: Optional[str] = None,
 ) -> Path:
     """
     Trim video using start and end timestamps in mm:ss format.
@@ -99,7 +97,7 @@ def trim_video(
     try:
         # Get video duration first
         probe = ffmpeg.probe(str(video_path))
-        duration = float(probe['format']['duration'])
+        duration = float(probe["format"]["duration"])
 
         # Parse timestamps
         start_seconds = parse_timestamp(start_from) if start_from else 0.0
@@ -138,7 +136,7 @@ def trim_video(
         output_stream = input_stream.output(
             str(trimmed_output),
             t=new_duration,
-            c='copy'  # Copy streams without re-encoding for speed
+            c="copy",  # Copy streams without re-encoding for speed
         )
 
         output_stream.overwrite_output().run(capture_stdout=True, capture_stderr=True)
@@ -172,7 +170,7 @@ def get_video_duration(video_path: Path) -> float:
     """
     try:
         probe = ffmpeg.probe(str(video_path))
-        return float(probe['format']['duration'])
+        return float(probe["format"]["duration"])
     except ffmpeg.Error as e:
         raise RuntimeError(f"Failed to probe video: {e.stderr.decode()}")
 
@@ -194,11 +192,10 @@ def get_video_dimensions(video_path: Path) -> tuple[int, int]:
     try:
         probe = ffmpeg.probe(str(video_path))
         video_stream = next(
-            (s for s in probe['streams'] if s['codec_type'] == 'video'),
-            None
+            (s for s in probe["streams"] if s["codec_type"] == "video"), None
         )
         if video_stream:
-            return int(video_stream['width']), int(video_stream['height'])
+            return int(video_stream["width"]), int(video_stream["height"])
         raise ValueError("No video stream found")
     except ffmpeg.Error as e:
         raise RuntimeError(f"Failed to probe video: {e.stderr.decode()}")

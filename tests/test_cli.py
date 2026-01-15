@@ -32,10 +32,13 @@ def project_setup(tmp_path, test_video_path, test_thumbnail_path):
     return tmp_path
 
 
-@pytest.mark.parametrize("theme,extension", [
-    ("dark", "png"),
-    ("light", "jpg"),
-])
+@pytest.mark.parametrize(
+    "theme,extension",
+    [
+        ("dark", "png"),
+        ("light", "jpg"),
+    ],
+)
 def test_get_thumbnail_path_finds_image(tmp_path, theme, extension):
     # Arrange
     thumbnails_dir = tmp_path / "thumbnails"
@@ -108,16 +111,26 @@ def test_process_command_full_pipeline(project_setup, monkeypatch):
     monkeypatch.chdir(project_setup)
 
     # Act - use skip-transcription to avoid needing ML models
-    result = runner.invoke(app, [
-        "process", "test_video.mov",
-        "--theme", "raise",
-        "--title", "Test Video",
-        "--subtitle", "Test Author",
-        "--skip-transcription",
-        "--start-from", "00:00",
-        "--end-at", "00:05",
-        "--thumbnail-duration", "2",
-    ])
+    result = runner.invoke(
+        app,
+        [
+            "process",
+            "test_video.mov",
+            "--theme",
+            "raise",
+            "--title",
+            "Test Video",
+            "--subtitle",
+            "Test Author",
+            "--skip-transcription",
+            "--start-from",
+            "00:00",
+            "--end-at",
+            "00:05",
+            "--thumbnail-duration",
+            "2",
+        ],
+    )
 
     # Assert
     assert result.exit_code == 0
@@ -136,14 +149,22 @@ def test_process_command_creates_metadata_file(project_setup, monkeypatch):
     monkeypatch.chdir(project_setup)
 
     # Act
-    result = runner.invoke(app, [
-        "process", "test_video.mov",
-        "--theme", "raise",
-        "--title", "Metadata Test",
-        "--subtitle", "Author Name",
-        "--skip-transcription",
-        "--end-at", "00:03",
-    ])
+    result = runner.invoke(
+        app,
+        [
+            "process",
+            "test_video.mov",
+            "--theme",
+            "raise",
+            "--title",
+            "Metadata Test",
+            "--subtitle",
+            "Author Name",
+            "--skip-transcription",
+            "--end-at",
+            "00:03",
+        ],
+    )
 
     # Assert
     assert result.exit_code == 0
@@ -157,10 +178,15 @@ def test_process_command_video_not_found(project_setup, monkeypatch):
     monkeypatch.chdir(project_setup)
 
     # Act
-    result = runner.invoke(app, [
-        "process", "nonexistent.mp4",
-        "--theme", "raise",
-    ])
+    result = runner.invoke(
+        app,
+        [
+            "process",
+            "nonexistent.mp4",
+            "--theme",
+            "raise",
+        ],
+    )
 
     # Assert
     assert result.exit_code == 1
@@ -172,10 +198,15 @@ def test_process_command_theme_not_found(project_setup, monkeypatch):
     monkeypatch.chdir(project_setup)
 
     # Act
-    result = runner.invoke(app, [
-        "process", "test_video.mov",
-        "--theme", "nonexistent",
-    ])
+    result = runner.invoke(
+        app,
+        [
+            "process",
+            "test_video.mov",
+            "--theme",
+            "nonexistent",
+        ],
+    )
 
     # Assert
     assert result.exit_code == 1

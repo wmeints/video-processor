@@ -145,7 +145,9 @@ def transcribe_audio(audio_path: Path, output_path: Path, lang: str = "en") -> s
         transcription_file.write_text(transcription, encoding="utf-8")
 
         console.print(f"[green]✓ Transcription saved to:[/green] {transcription_file}")
-        preview = transcription[:200] + "..." if len(transcription) > 200 else transcription
+        preview = (
+            transcription[:200] + "..." if len(transcription) > 200 else transcription
+        )
         console.print(f"[dim]Transcription preview: {preview}[/dim]")
 
         return transcription

@@ -8,7 +8,9 @@ from rich.console import Console
 console = Console()
 
 
-def extract_audio(video_path: Path, output_path: Path, sample_rate: int = 16000) -> Path:
+def extract_audio(
+    video_path: Path, output_path: Path, sample_rate: int = 16000
+) -> Path:
     """
     Extract audio from a video file and save as WAV.
 
@@ -33,13 +35,12 @@ def extract_audio(video_path: Path, output_path: Path, sample_rate: int = 16000)
     try:
         # Use ffmpeg to extract audio with proper sample rate for speech recognition
         (
-            ffmpeg
-            .input(str(video_path))
+            ffmpeg.input(str(video_path))
             .output(
                 str(audio_output),
-                acodec='pcm_s16le',
+                acodec="pcm_s16le",
                 ac=1,  # Mono channel
-                ar=sample_rate  # Sample rate for Parakeet
+                ar=sample_rate,  # Sample rate for Parakeet
             )
             .overwrite_output()
             .run(capture_stdout=True, capture_stderr=True)

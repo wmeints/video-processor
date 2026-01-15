@@ -54,4 +54,6 @@ def test_transcribe_audio_content_makes_sense(test_audio_path, processing_dir):
     # Check for at least some expected terms
     expected_terms = ["copilot", "skill", "code", "github"]
     found_terms = [term for term in expected_terms if term in result_lower]
-    assert len(found_terms) >= 1, f"Expected at least one of {expected_terms} in transcription"
+    assert len(found_terms) >= 1, (
+        f"Expected at least one of {expected_terms} in transcription"
+    )
