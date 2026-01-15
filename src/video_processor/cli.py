@@ -26,7 +26,14 @@ console = Console()
 
 
 def get_project_root() -> Path:
-    """Get the project root directory."""
+    """
+    Get the project root directory.
+
+    Returns
+    -------
+    Path
+        The current working directory as project root.
+    """
     return Path.cwd()
 
 
@@ -34,8 +41,15 @@ def ensure_directories(project_root: Path) -> tuple[Path, Path, Path]:
     """
     Ensure input, output, and processing directories exist.
 
-    Returns:
-        Tuple of (input_dir, output_dir, processing_dir)
+    Parameters
+    ----------
+    project_root : Path
+        The project root directory.
+
+    Returns
+    -------
+    tuple[Path, Path, Path]
+        Tuple of (input_dir, output_dir, processing_dir).
     """
     input_dir = project_root / "input"
     output_dir = project_root / "output"
@@ -52,15 +66,22 @@ def get_thumbnail_path(project_root: Path, theme: str) -> Path:
     """
     Get the thumbnail path for a given theme.
 
-    Args:
-        project_root: Project root directory
-        theme: Theme name (e.g., 'dark', 'light', 'corporate')
+    Parameters
+    ----------
+    project_root : Path
+        Project root directory.
+    theme : str
+        Theme name (e.g., 'dark', 'light', 'corporate').
 
-    Returns:
-        Path to the thumbnail image
+    Returns
+    -------
+    Path
+        Path to the thumbnail image.
 
-    Raises:
-        FileNotFoundError: If the theme thumbnail doesn't exist
+    Raises
+    ------
+    FileNotFoundError
+        If the theme thumbnail doesn't exist.
     """
     thumbnails_dir = project_root / "thumbnails"
     thumbnail_path = thumbnails_dir / f"{theme}.jpg"

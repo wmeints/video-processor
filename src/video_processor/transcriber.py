@@ -16,8 +16,10 @@ def get_parakeet_model():
     """
     Load and cache the Nvidia Parakeet ASR model.
 
-    Returns:
-        The loaded Parakeet model
+    Returns
+    -------
+    nemo_asr.models.ASRModel
+        The loaded Parakeet model.
     """
     global _parakeet_model
 
@@ -59,8 +61,10 @@ def get_whisper_model():
     """
     Load and cache the Whisper model for multilingual transcription.
 
-    Returns:
-        The loaded Whisper model
+    Returns
+    -------
+    whisper.Whisper
+        The loaded Whisper model.
     """
     global _whisper_model
 
@@ -85,13 +89,19 @@ def transcribe_audio(audio_path: Path, output_path: Path, lang: str = "en") -> s
     """
     Transcribe audio file using Nvidia Parakeet (English) or Whisper (Dutch/other).
 
-    Args:
-        audio_path: Path to the audio file (WAV format, 16kHz)
-        output_path: Path where transcription will be saved
-        lang: Language code ('en' for English, 'nl' for Dutch)
+    Parameters
+    ----------
+    audio_path : Path
+        Path to the audio file (WAV format, 16kHz).
+    output_path : Path
+        Path where transcription will be saved.
+    lang : str, optional
+        Language code ('en' for English, 'nl' for Dutch). Default is 'en'.
 
-    Returns:
-        The transcription text
+    Returns
+    -------
+    str
+        The transcription text.
     """
     console.print(f"[blue]Transcribing audio ({lang}):[/blue] {audio_path}")
 

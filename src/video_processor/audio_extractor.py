@@ -12,13 +12,19 @@ def extract_audio(video_path: Path, output_path: Path, sample_rate: int = 16000)
     """
     Extract audio from a video file and save as WAV.
 
-    Args:
-        video_path: Path to the input video file
-        output_path: Path where the audio file will be saved
-        sample_rate: Sample rate for the output audio (default: 16000 for Parakeet)
+    Parameters
+    ----------
+    video_path : Path
+        Path to the input video file.
+    output_path : Path
+        Path where the audio file will be saved.
+    sample_rate : int, optional
+        Sample rate for the output audio (default is 16000 for Parakeet).
 
-    Returns:
-        Path to the extracted audio file
+    Returns
+    -------
+    Path
+        Path to the extracted audio file.
     """
     console.print(f"[blue]Extracting audio from:[/blue] {video_path}")
 

@@ -14,14 +14,20 @@ def parse_timestamp(timestamp: str) -> float:
     """
     Parse a timestamp in mm:ss format to seconds.
 
-    Args:
-        timestamp: Time string in mm:ss format (e.g., "01:30" for 1 minute 30 seconds)
+    Parameters
+    ----------
+    timestamp : str
+        Time string in mm:ss format (e.g., "01:30" for 1 minute 30 seconds).
 
-    Returns:
-        Time in seconds as float
+    Returns
+    -------
+    float
+        Time in seconds.
 
-    Raises:
-        ValueError: If timestamp format is invalid
+    Raises
+    ------
+    ValueError
+        If timestamp format is invalid.
     """
     pattern = r'^(\d{1,2}):(\d{2})$'
     match = re.match(pattern, timestamp)
@@ -46,11 +52,15 @@ def format_timestamp(seconds: float) -> str:
     """
     Format seconds as mm:ss timestamp.
 
-    Args:
-        seconds: Time in seconds
+    Parameters
+    ----------
+    seconds : float
+        Time in seconds.
 
-    Returns:
-        Formatted timestamp string (mm:ss)
+    Returns
+    -------
+    str
+        Formatted timestamp string (mm:ss).
     """
     minutes = int(seconds // 60)
     secs = int(seconds % 60)
@@ -66,14 +76,21 @@ def trim_video(
     """
     Trim video using start and end timestamps in mm:ss format.
 
-    Args:
-        video_path: Path to the input video file
-        output_path: Directory where trimmed video will be saved
-        start_from: Start timestamp in mm:ss format (e.g., "00:03" to start at 3 seconds)
-        end_at: End timestamp in mm:ss format (e.g., "05:30" to end at 5:30)
+    Parameters
+    ----------
+    video_path : Path
+        Path to the input video file.
+    output_path : Path
+        Directory where trimmed video will be saved.
+    start_from : str, optional
+        Start timestamp in mm:ss format (e.g., "00:03" to start at 3 seconds).
+    end_at : str, optional
+        End timestamp in mm:ss format (e.g., "05:30" to end at 5:30).
 
-    Returns:
-        Path to the trimmed video file
+    Returns
+    -------
+    Path
+        Path to the trimmed video file.
     """
     console.print(f"[blue]Trimming video:[/blue] {video_path}")
 
@@ -143,11 +160,15 @@ def get_video_duration(video_path: Path) -> float:
     """
     Get the duration of a video file in seconds.
 
-    Args:
-        video_path: Path to the video file
+    Parameters
+    ----------
+    video_path : Path
+        Path to the video file.
 
-    Returns:
-        Duration in seconds
+    Returns
+    -------
+    float
+        Duration in seconds.
     """
     try:
         probe = ffmpeg.probe(str(video_path))
@@ -160,11 +181,15 @@ def get_video_dimensions(video_path: Path) -> tuple[int, int]:
     """
     Get the width and height of a video file.
 
-    Args:
-        video_path: Path to the video file
+    Parameters
+    ----------
+    video_path : Path
+        Path to the video file.
 
-    Returns:
-        Tuple of (width, height)
+    Returns
+    -------
+    tuple[int, int]
+        Tuple of (width, height).
     """
     try:
         probe = ffmpeg.probe(str(video_path))

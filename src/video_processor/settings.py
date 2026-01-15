@@ -5,7 +5,19 @@ from pathlib import Path
 
 
 def load_settings() -> dict:
-    """Load settings from ~/.config/video-processor/settings.json."""
+    """
+    Load settings from ~/.config/video-processor/settings.json.
+
+    Returns
+    -------
+    dict
+        Settings dictionary containing api_key and api_url.
+
+    Raises
+    ------
+    FileNotFoundError
+        If the settings file does not exist.
+    """
     config_path = Path.home() / ".config" / "video-processor" / "settings.json"
     if not config_path.exists():
         raise FileNotFoundError(

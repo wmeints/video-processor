@@ -54,13 +54,19 @@ def generate_content_metadata(
     """
     Generate title and description from transcription using Claude.
 
-    Args:
-        transcription: The full transcription text
-        output_path: Path where metadata will be saved
-        lang: Language for output ('nl' for Dutch, 'en' for English)
+    Parameters
+    ----------
+    transcription : str
+        The full transcription text.
+    output_path : Path
+        Path where metadata will be saved.
+    lang : str, optional
+        Language for output ('nl' for Dutch, 'en' for English). Default is 'nl'.
 
-    Returns:
-        Dictionary with 'title' and 'description' keys
+    Returns
+    -------
+    dict[str, str]
+        Dictionary with 'title' and 'description' keys.
     """
     console.print(f"[blue]Generating title and description with Claude ({lang})...[/blue]")
 

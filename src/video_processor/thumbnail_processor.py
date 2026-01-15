@@ -20,17 +20,27 @@ def create_thumbnail_with_text(
     """
     Create a thumbnail image with title and subtitle text overlay.
 
-    Args:
-        thumbnail_path: Path to the original thumbnail image
-        title: Title text to overlay
-        subtitle: Subtitle text to overlay
-        output_path: Directory where processed thumbnail will be saved
-        video_width: Width of the target video
-        video_height: Height of the target video
-        duration: How long to show the thumbnail (seconds)
+    Parameters
+    ----------
+    thumbnail_path : Path
+        Path to the original thumbnail image.
+    title : str
+        Title text to overlay.
+    subtitle : str
+        Subtitle text to overlay.
+    output_path : Path
+        Directory where processed thumbnail will be saved.
+    video_width : int
+        Width of the target video.
+    video_height : int
+        Height of the target video.
+    duration : float, optional
+        How long to show the thumbnail in seconds (default is 5.0).
 
-    Returns:
-        Path to the processed thumbnail image
+    Returns
+    -------
+    Path
+        Path to the processed thumbnail image.
     """
     console.print(f"[blue]Processing thumbnail:[/blue] {thumbnail_path}")
 
@@ -126,14 +136,21 @@ def add_thumbnail_to_video(
     """
     Add a thumbnail image at the beginning of a video.
 
-    Args:
-        video_path: Path to the input video
-        thumbnail_path: Path to the thumbnail image
-        output_path: Directory where final video will be saved
-        thumbnail_duration: Duration to show thumbnail (seconds)
+    Parameters
+    ----------
+    video_path : Path
+        Path to the input video.
+    thumbnail_path : Path
+        Path to the thumbnail image.
+    output_path : Path
+        Directory where final video will be saved.
+    thumbnail_duration : float, optional
+        Duration to show thumbnail in seconds (default is 5.0).
 
-    Returns:
-        Path to the video with thumbnail prepended
+    Returns
+    -------
+    Path
+        Path to the video with thumbnail prepended.
     """
     import ffmpeg
 
