@@ -34,6 +34,7 @@ packages = ["src/video_processor"]
 dev = [
     "pytest>=7.0.0",
     "pytest-cov>=4.0.0",
+    "ruff>=0.14.11",
 ]
 
 [tool.pytest.ini_options]

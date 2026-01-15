@@ -194,7 +194,7 @@ def process(
         thumbnail_path = get_thumbnail_path(project_root, theme)
     except FileNotFoundError as e:
         console.print(f"[red]Error:[/red] {e}")
-        console.print(f"[dim]Create a thumbnails folder and add your theme images (e.g., thumbnails/dark.jpg or dark.png)[/dim]")
+        console.print("[dim]Create a thumbnails folder and add your theme images (e.g., thumbnails/dark.jpg or dark.png)[/dim]")
         raise typer.Exit(code=1)
 
     console.print(f"\n[bold]Input video:[/bold] {video_path}")
@@ -335,12 +335,12 @@ def info(
         # Stream info
         for stream in probe.get('streams', []):
             if stream['codec_type'] == 'video':
-                console.print(f"\n[bold]Video Stream:[/bold]")
+                console.print("\n[bold]Video Stream:[/bold]")
                 console.print(f"  Codec: {stream.get('codec_name', 'Unknown')}")
                 console.print(f"  Resolution: {stream.get('width')}x{stream.get('height')}")
                 console.print(f"  Frame rate: {stream.get('r_frame_rate', 'Unknown')}")
             elif stream['codec_type'] == 'audio':
-                console.print(f"\n[bold]Audio Stream:[/bold]")
+                console.print("\n[bold]Audio Stream:[/bold]")
                 console.print(f"  Codec: {stream.get('codec_name', 'Unknown')}")
                 console.print(f"  Sample rate: {stream.get('sample_rate', 'Unknown')} Hz")
                 console.print(f"  Channels: {stream.get('channels', 'Unknown')}")

@@ -128,6 +128,18 @@ Common fixtures are defined in `tests/conftest.py`:
 
 ## Code Style
 
+### Linting
+
+This project uses **ruff** for linting:
+
+```bash
+# Run linter
+uv run ruff check
+
+# Run linter with auto-fix
+uv run ruff check --fix
+```
+
 ### Docstrings
 
 Use **NumPy-style docstrings** for all functions and classes:

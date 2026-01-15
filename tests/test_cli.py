@@ -1,8 +1,6 @@
 """Tests for the CLI module."""
 
 import shutil
-from pathlib import Path
-from unittest.mock import MagicMock, patch
 
 import pytest
 from typer.testing import CliRunner
