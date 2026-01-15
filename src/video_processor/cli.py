@@ -87,7 +87,7 @@ def process(
         help="Name of the video file in the input folder (e.g., 'my_video.mp4')"
     ),
     theme: str = typer.Option(
-        ...,
+        "raise",
         "--theme",
         help="Theme name for thumbnail background (looks for thumbnails/<theme>.jpg or .png)"
     ),
