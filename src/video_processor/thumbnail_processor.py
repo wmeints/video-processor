@@ -151,9 +151,6 @@ def add_thumbnail_to_video(
         if not video_stream:
             raise ValueError("No video stream found in input video")
 
-        width = int(video_stream["width"])
-        height = int(video_stream["height"])
-
         # Get frame rate
         fps_parts = video_stream.get("r_frame_rate", "30/1").split("/")
         fps = float(fps_parts[0]) / float(fps_parts[1]) if len(fps_parts) == 2 else 30.0
