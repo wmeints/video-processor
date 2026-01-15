@@ -15,7 +15,7 @@ def create_thumbnail_with_text(
     output_path: Path,
     video_width: int,
     video_height: int,
-    duration: float = 5.0
+    duration: float = 5.0,
 ) -> Path:
     """
     Create a thumbnail image with title and subtitle text overlay.
@@ -45,8 +45,8 @@ def create_thumbnail_with_text(
         draw = ImageDraw.Draw(img)
 
         # Try to use a nice font, fallback to default
-        title_font_size = max(video_width // 30, 28)
-        subtitle_font_size = max(video_width // 45, 18)
+        title_font_size = 56
+        subtitle_font_size = 48
 
         try:
             # Try common system fonts
@@ -93,19 +93,11 @@ def create_thumbnail_with_text(
         subtitle_color = (80, 80, 80, 255)  # Dark gray
 
         # Draw title
-        draw.text(
-            (title_x, title_y),
-            title,
-            font=title_font,
-            fill=title_color
-        )
+        draw.text((title_x, title_y), title, font=title_font, fill=title_color)
 
         # Draw subtitle
         draw.text(
-            (subtitle_x, subtitle_y),
-            subtitle,
-            font=subtitle_font,
-            fill=subtitle_color
+            (subtitle_x, subtitle_y), subtitle, font=subtitle_font, fill=subtitle_color
         )
 
         # Save the processed thumbnail
@@ -124,7 +116,7 @@ def add_thumbnail_to_video(
     video_path: Path,
     thumbnail_path: Path,
     output_path: Path,
-    thumbnail_duration: float = 5.0
+    thumbnail_duration: float = 5.0,
 ) -> Path:
     """
     Add a thumbnail image at the beginning of a video.
@@ -148,18 +140,17 @@ def add_thumbnail_to_video(
         # Get video properties
         probe = ffmpeg.probe(str(video_path))
         video_stream = next(
-            (s for s in probe['streams'] if s['codec_type'] == 'video'),
-            None
+            (s for s in probe["streams"] if s["codec_type"] == "video"), None
         )
 
         if not video_stream:
             raise ValueError("No video stream found in input video")
 
-        width = int(video_stream['width'])
-        height = int(video_stream['height'])
+        width = int(video_stream["width"])
+        height = int(video_stream["height"])
 
         # Get frame rate
-        fps_parts = video_stream.get('r_frame_rate', '30/1').split('/')
+        fps_parts = video_stream.get("r_frame_rate", "30/1").split("/")
         fps = float(fps_parts[0]) / float(fps_parts[1]) if len(fps_parts) == 2 else 30.0
 
         # Create video from thumbnail image with silent audio
@@ -167,17 +158,18 @@ def add_thumbnail_to_video(
 
         # Create video from static image with silent audio track
         video_input = ffmpeg.input(str(thumbnail_path), loop=1, t=thumbnail_duration)
-        audio_input = ffmpeg.input('anullsrc=r=48000:cl=stereo', f='lavfi', t=thumbnail_duration)
+        audio_input = ffmpeg.input(
+            "anullsrc=r=48000:cl=stereo", f="lavfi", t=thumbnail_duration
+        )
 
         (
-            ffmpeg
-            .output(
+            ffmpeg.output(
                 video_input,
                 audio_input,
                 str(thumbnail_video),
-                vcodec='libx264',
-                acodec='aac',
-                pix_fmt='yuv420p',
+                vcodec="libx264",
+                acodec="aac",
+                pix_fmt="yuv420p",
                 r=fps,
                 shortest=None,
             )
@@ -205,14 +197,13 @@ def add_thumbnail_to_video(
         )
 
         (
-            ffmpeg
-            .output(
+            ffmpeg.output(
                 video_joined,
                 audio_joined,
                 str(final_output),
-                vcodec='libx264',
-                acodec='aac',
-                pix_fmt='yuv420p',
+                vcodec="libx264",
+                acodec="aac",
+                pix_fmt="yuv420p",
             )
             .overwrite_output()
             .run(capture_stdout=True, capture_stderr=True)
