@@ -8,7 +8,7 @@ dependencies = [
     "typer>=0.9.0",
     "rich>=13.0.0",
     "moviepy>=1.0.3",
-    "nemo-toolkit[asr]>=1.23.0",
+    "nemo-toolkit[asr]>=1.23.0; sys_platform != 'linux' or platform_machine != 'x86_64'",
     "torch>=2.0.0",
     "torchaudio>=2.0.0",
     "python-slugify>=8.0.0",
