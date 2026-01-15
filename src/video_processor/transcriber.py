@@ -27,7 +27,7 @@ def get_parakeet_model():
         console.print("[blue]Loading Nvidia Parakeet model...[/blue]")
 
         try:
-            import nemo.collections.asr as nemo_asr
+            import nemo.collections.asr as nemo_asr  # type: ignore[import-not-found]
 
             # Use Parakeet TDT model - optimized for transcription
             # This model works well on CPU/MPS for MacBook
