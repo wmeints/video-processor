@@ -74,19 +74,24 @@ def create_thumbnail_with_text(
             title_font = ImageFont.load_default()
             subtitle_font = ImageFont.load_default()
 
-        # Text positions: top-left aligned
+        # Text positions: vertically centered, left-aligned
         padding_x = int(video_width * 0.05)  # 5% from left
-        padding_y = int(video_height * 0.06)  # 6% from top
 
-        # Title position (top-left)
-        title_x = padding_x
-        title_y = padding_y
-
-        # Subtitle position (below title)
+        # Calculate total text block height for vertical centering
         title_bbox = draw.textbbox((0, 0), title, font=title_font)
         title_height = title_bbox[3] - title_bbox[1]
+        subtitle_bbox = draw.textbbox((0, 0), subtitle, font=subtitle_font)
+        subtitle_height = subtitle_bbox[3] - subtitle_bbox[1]
+        gap = int(video_height * 0.01)
+        total_text_height = title_height + gap + subtitle_height
+
+        # Title position (one third from top, left-aligned)
+        title_x = padding_x
+        title_y = (video_height // 3) - (total_text_height // 2)
+
+        # Subtitle position (below title)
         subtitle_x = padding_x
-        subtitle_y = title_y + title_height + int(video_height * 0.01)
+        subtitle_y = title_y + title_height + gap
 
         # Colors matching the example
         title_color = (0, 101, 163, 255)  # Dark blue
