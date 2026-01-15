@@ -1,5 +1,6 @@
 """Command-line interface for the video processor using Typer."""
 
+import json
 import shutil
 from datetime import datetime
 from pathlib import Path
@@ -194,7 +195,7 @@ def process(
 
         # Use provided title/subtitle or generated ones
         final_title = title or metadata["title"]
-        final_subtitle = subtitle or metadata["description"][:100]  # Truncate if too long
+        final_subtitle = subtitle or metadata["description"]
 
         # Step 4: Trim video (if timestamps provided)
         if start_from or end_at:
@@ -243,6 +244,14 @@ def process(
 
         # Copy final video to output directory
         shutil.copy2(final_video, output_path)
+
+        # Save metadata to output directory
+        output_metadata = {
+            "title": final_title,
+            "description": final_subtitle,
+        }
+        output_metadata_path = output_dir / f"{timestamp}_{slugified_title}_metadata.json"
+        output_metadata_path.write_text(json.dumps(output_metadata, indent=2), encoding="utf-8")
 
         # Success summary
         console.print("\n" + "=" * 60)
