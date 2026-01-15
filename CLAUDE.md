@@ -29,10 +29,15 @@ uv run pytest tests/test_file.py::test_function -v
 This is a video processing CLI tool that orchestrates a 5-step pipeline:
 
 1. **Audio Extraction** (`audio_extractor.py`) - Extracts 16kHz mono WAV using ffmpeg-python
-2. **Transcription** (`transcriber.py`) - Uses Nvidia Parakeet TDT model via NeMo toolkit with MPS acceleration on Apple Silicon
+2. **Transcription** (`transcriber.py`) - Uses Nvidia Parakeet TDT model via NeMo toolkit with CUDA/MPS acceleration
 3. **Metadata Generation** (`content_generator.py`) - Generates title/description from transcription using heuristics (no LLM)
 4. **Video Trimming** (`video_editor.py`) - Trims video using mm:ss timestamps with ffmpeg stream copy
 5. **Thumbnail Addition** (`thumbnail_processor.py`) - Creates PNG with text overlay using Pillow, then prepends as video segment
+
+### Module Structure
+
+- **`cli.py`** - Typer CLI entry point, handles argument parsing, validation, and user output
+- **`pipeline.py`** - Pipeline orchestration with `ProcessingContext` dataclass and step functions (`run_pipeline`, `step_extract_audio`, `step_transcribe`, etc.)
 
 ### Key Design Decisions
 
@@ -42,6 +47,7 @@ This is a video processing CLI tool that orchestrates a 5-step pipeline:
 - **Theme thumbnails** are loaded from `thumbnails/<theme>.jpg` or `.png`
 - **Parakeet model** is cached globally in `transcriber.py` to avoid reloading (~2.4GB download on first run)
 - **Video concatenation** uses ffmpeg concat demuxer with a temp file list
+- **GPU acceleration** prefers CUDA, falls back to MPS (Apple Silicon), then CPU
 
 ### Directory Structure
 
@@ -52,6 +58,7 @@ processing/     # Timestamped intermediate files
 thumbnails/     # Theme background images (dark.jpg, light.jpg, etc.)
 src/video_processor/
   cli.py        # Typer CLI entry point
+  pipeline.py   # Pipeline orchestration and step functions
   audio_extractor.py
   transcriber.py
   content_generator.py
