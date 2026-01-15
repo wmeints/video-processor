@@ -42,24 +42,11 @@ def create_thumbnail_with_text(
         img = img.convert("RGBA")
         img = img.resize((video_width, video_height), Image.Resampling.LANCZOS)
 
-        # Create a semi-transparent overlay for better text visibility
-        overlay = Image.new("RGBA", img.size, (0, 0, 0, 0))
-        draw = ImageDraw.Draw(overlay)
-
-        # Draw a gradient-like overlay at the bottom for text
-        gradient_height = video_height // 3
-        for i in range(gradient_height):
-            alpha = int(180 * (i / gradient_height))  # Gradient from 0 to 180
-            y = video_height - gradient_height + i
-            draw.line([(0, y), (video_width, y)], fill=(0, 0, 0, alpha))
-
-        # Composite the overlay
-        img = Image.alpha_composite(img, overlay)
         draw = ImageDraw.Draw(img)
 
         # Try to use a nice font, fallback to default
-        title_font_size = max(video_width // 20, 24)
-        subtitle_font_size = max(video_width // 30, 16)
+        title_font_size = max(video_width // 30, 28)
+        subtitle_font_size = max(video_width // 45, 18)
 
         try:
             # Try common system fonts
@@ -87,52 +74,38 @@ def create_thumbnail_with_text(
             title_font = ImageFont.load_default()
             subtitle_font = ImageFont.load_default()
 
-        # Calculate text positions (centered, near bottom)
-        padding = 40
+        # Text positions: top-left aligned
+        padding_x = int(video_width * 0.05)  # 5% from left
+        padding_y = int(video_height * 0.06)  # 6% from top
 
-        # Title position
+        # Title position (top-left)
+        title_x = padding_x
+        title_y = padding_y
+
+        # Subtitle position (below title)
         title_bbox = draw.textbbox((0, 0), title, font=title_font)
-        title_width = title_bbox[2] - title_bbox[0]
-        title_x = (video_width - title_width) // 2
-        title_y = video_height - padding - subtitle_font_size - 20 - title_font_size
+        title_height = title_bbox[3] - title_bbox[1]
+        subtitle_x = padding_x
+        subtitle_y = title_y + title_height + int(video_height * 0.01)
 
-        # Subtitle position
-        subtitle_bbox = draw.textbbox((0, 0), subtitle, font=subtitle_font)
-        subtitle_width = subtitle_bbox[2] - subtitle_bbox[0]
-        subtitle_x = (video_width - subtitle_width) // 2
-        subtitle_y = video_height - padding - subtitle_font_size
+        # Colors matching the example
+        title_color = (0, 101, 163, 255)  # Dark blue
+        subtitle_color = (80, 80, 80, 255)  # Dark gray
 
-        # Draw text with shadow for better visibility
-        shadow_offset = 2
-
-        # Title shadow
-        draw.text(
-            (title_x + shadow_offset, title_y + shadow_offset),
-            title,
-            font=title_font,
-            fill=(0, 0, 0, 200)
-        )
-        # Title
+        # Draw title
         draw.text(
             (title_x, title_y),
             title,
             font=title_font,
-            fill=(255, 255, 255, 255)
+            fill=title_color
         )
 
-        # Subtitle shadow
-        draw.text(
-            (subtitle_x + shadow_offset, subtitle_y + shadow_offset),
-            subtitle,
-            font=subtitle_font,
-            fill=(0, 0, 0, 200)
-        )
-        # Subtitle
+        # Draw subtitle
         draw.text(
             (subtitle_x, subtitle_y),
             subtitle,
             font=subtitle_font,
-            fill=(220, 220, 220, 255)
+            fill=subtitle_color
         )
 
         # Save the processed thumbnail
@@ -189,39 +162,57 @@ def add_thumbnail_to_video(
         fps_parts = video_stream.get('r_frame_rate', '30/1').split('/')
         fps = float(fps_parts[0]) / float(fps_parts[1]) if len(fps_parts) == 2 else 30.0
 
-        # Create video from thumbnail image
+        # Create video from thumbnail image with silent audio
         thumbnail_video = output_path / "thumbnail_video.mp4"
 
-        # Create a video from the static image
+        # Create video from static image with silent audio track
+        video_input = ffmpeg.input(str(thumbnail_path), loop=1, t=thumbnail_duration)
+        audio_input = ffmpeg.input('anullsrc=r=48000:cl=stereo', f='lavfi', t=thumbnail_duration)
+
         (
             ffmpeg
-            .input(str(thumbnail_path), loop=1, t=thumbnail_duration)
             .output(
+                video_input,
+                audio_input,
                 str(thumbnail_video),
                 vcodec='libx264',
+                acodec='aac',
                 pix_fmt='yuv420p',
                 r=fps,
-                t=thumbnail_duration,
-                **{'c:a': 'aac'}  # Silent audio track
+                shortest=None,
             )
             .overwrite_output()
             .run(capture_stdout=True, capture_stderr=True)
         )
 
-        # Now concatenate thumbnail video with main video
-        # Create a concat file
-        concat_file = output_path / "concat_list.txt"
-        concat_file.write_text(
-            f"file '{thumbnail_video.absolute()}'\nfile '{video_path.absolute()}'"
+        # Now concatenate thumbnail video with main video using filter_complex
+        # This re-encodes to ensure compatibility between the two videos
+        thumbnail_input = ffmpeg.input(str(thumbnail_video))
+        main_input = ffmpeg.input(str(video_path))
+
+        # Concat video streams separately from audio streams
+        video_joined = ffmpeg.concat(
+            thumbnail_input.video,
+            main_input.video,
+            v=1,
+            a=0,
+        )
+        audio_joined = ffmpeg.concat(
+            thumbnail_input.audio,
+            main_input.audio,
+            v=0,
+            a=1,
         )
 
-        # Concatenate using ffmpeg concat demuxer
         (
             ffmpeg
-            .input(str(concat_file), f='concat', safe=0)
             .output(
+                video_joined,
+                audio_joined,
                 str(final_output),
-                c='copy'
+                vcodec='libx264',
+                acodec='aac',
+                pix_fmt='yuv420p',
             )
             .overwrite_output()
             .run(capture_stdout=True, capture_stderr=True)
