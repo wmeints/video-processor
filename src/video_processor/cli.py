@@ -121,6 +121,11 @@ def process(
         "--skip-transcription",
         help="Skip transcription and use provided title/subtitle instead"
     ),
+    lang: str = typer.Option(
+        "nl",
+        "--lang",
+        help="Language for generated title/description ('nl' for Dutch, 'en' for English)"
+    ),
 ):
     """
     Process a video file with full pipeline:
@@ -191,7 +196,7 @@ def process(
                 "description": subtitle or "Video content"
             }
         else:
-            metadata = generate_content_metadata(transcription, processing_dir)
+            metadata = generate_content_metadata(transcription, processing_dir, lang=lang)
 
         # Use provided title/subtitle or generated ones
         final_title = title or metadata["title"]

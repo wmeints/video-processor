@@ -20,18 +20,49 @@ class VideoMetadata(BaseModel):
     description: str = Field(description="Video description, 1-2 sentences")
 
 
-def generate_content_metadata(transcription: str, output_path: Path) -> dict[str, str]:
+PROMPTS = {
+    "nl": {
+        "system": "Je genereert video metadata van transcripties. Schrijf altijd in het Nederlands.",
+        "user": """Genereer een titel en beschrijving voor deze video op basis van de transcriptie.
+
+Richtlijnen:
+- Titel: Houd het kort en pakkend, maximaal 140 karakters
+- Beschrijving: 1-2 zinnen die de inhoud van de video samenvatten
+- Schrijf in het Nederlands
+
+Transcriptie:
+{transcription}""",
+    },
+    "en": {
+        "system": "You generate video metadata from transcriptions. Always write in English.",
+        "user": """Generate a title and description for this video based on its transcription.
+
+Guidelines:
+- Title: Keep it short and engaging, maximum 140 characters
+- Description: 1-2 sentences summarizing the video content
+- Write in English
+
+Transcription:
+{transcription}""",
+    },
+}
+
+
+def generate_content_metadata(
+    transcription: str, output_path: Path, lang: str = "nl"
+) -> dict[str, str]:
     """
     Generate title and description from transcription using Claude.
 
     Args:
         transcription: The full transcription text
         output_path: Path where metadata will be saved
+        lang: Language for output ('nl' for Dutch, 'en' for English)
 
     Returns:
         Dictionary with 'title' and 'description' keys
     """
-    console.print("[blue]Generating title and description with Claude...[/blue]")
+    console.print(f"[blue]Generating title and description with Claude ({lang})...[/blue]")
 
     settings = load_settings()
 
@@ -43,20 +74,11 @@ def generate_content_metadata(transcription: str, output_path: Path) -> dict[str
 
     structured_llm = llm.with_structured_output(VideoMetadata)
 
+    lang_prompts = PROMPTS.get(lang, PROMPTS["nl"])
     prompt = ChatPromptTemplate.from_messages(
         [
-            ("system", "You generate video metadata from transcriptions."),
-            (
-                "user",
-                """Generate a title and description for this video based on its transcription.
-
-Guidelines:
-- Title: Keep it short and engaging, maximum 140 characters
-- Description: 1-2 sentences summarizing the video content
-
-Transcription:
-{transcription}""",
-            ),
+            ("system", lang_prompts["system"]),
+            ("user", lang_prompts["user"]),
         ]
     )
 
