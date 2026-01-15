@@ -260,6 +260,7 @@ def process(
         output_metadata = {
             "title": final_title,
             "description": final_description,
+            "author": author,
         }
         output_metadata_path = output_dir / f"{timestamp}_{slugified_title}_metadata.json"
         output_metadata_path.write_text(json.dumps(output_metadata, indent=2), encoding="utf-8")
