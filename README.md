@@ -157,6 +157,7 @@ The first time you run the transcription, the Nvidia Parakeet model will be down
 
 ### Performance
 
+- On systems with NVIDIA GPUs, the model uses CUDA acceleration for faster inference
 - On Apple Silicon Macs, the model uses MPS acceleration for faster inference
 - On other systems, it falls back to CPU inference (slower but still functional)
 
@@ -179,7 +180,7 @@ uv sync --dev
 uv run pytest
 
 # Run the CLI directly
-uv run python -m video_processor.cli --help
+uv run video-processor --help
 ```
 
 ## License
