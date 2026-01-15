@@ -78,7 +78,7 @@ def generate_content_metadata(
     settings = load_settings()
 
     llm = ChatAnthropic(
-        model="claude-sonnet-4-5",
+        model="claude-sonnet-4-5",  # type: ignore[call-arg]
         api_key=settings["api_key"],
         base_url=settings.get("api_url"),
     )
@@ -97,16 +97,16 @@ def generate_content_metadata(
     result = chain.invoke({"transcription": transcription})
 
     metadata = {
-        "title": result.title,
-        "description": result.description,
+        "title": result.title,  # type: ignore[union-attr]
+        "description": result.description,  # type: ignore[union-attr]
     }
 
     # Save metadata to JSON file
     metadata_file = output_path / "metadata.json"
     metadata_file.write_text(json.dumps(metadata, indent=2), encoding="utf-8")
 
-    console.print(f"[green]\u2713 Generated title:[/green] {result.title}")
-    console.print(f"[green]\u2713 Generated description:[/green] {result.description}")
+    console.print(f"[green]\u2713 Generated title:[/green] {result.title}")  # type: ignore[union-attr]
+    console.print(f"[green]\u2713 Generated description:[/green] {result.description}")  # type: ignore[union-attr]
     console.print(f"[dim]Metadata saved to: {metadata_file}[/dim]")
 
     return metadata

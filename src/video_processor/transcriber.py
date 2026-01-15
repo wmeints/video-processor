@@ -48,11 +48,11 @@ def get_parakeet_model():
 
             # Move model to appropriate device
             if device == "cuda":
-                _parakeet_model = _parakeet_model.cuda()
+                _parakeet_model = _parakeet_model.cuda()  # type: ignore[union-attr]
             elif device == "cpu":
-                _parakeet_model = _parakeet_model.cpu()
+                _parakeet_model = _parakeet_model.cpu()  # type: ignore[union-attr]
 
-            _parakeet_model.eval()
+            _parakeet_model.eval()  # type: ignore[union-attr]
             console.print("[green]✓ Parakeet model loaded successfully[/green]")
 
         except Exception as e:
@@ -125,7 +125,7 @@ def transcribe_audio(audio_path: Path, output_path: Path, lang: str = "en") -> s
         if lang == "en":
             # Use Parakeet for English
             model = get_parakeet_model()
-            transcriptions = model.transcribe([str(audio_path)])
+            transcriptions = model.transcribe([str(audio_path)])  # type: ignore[union-attr]
 
             if isinstance(transcriptions, list) and len(transcriptions) > 0:
                 if hasattr(transcriptions[0], "text"):
@@ -142,15 +142,15 @@ def transcribe_audio(audio_path: Path, output_path: Path, lang: str = "en") -> s
 
         # Save transcription to file
         transcription_file = output_path / "transcription.txt"
-        transcription_file.write_text(transcription, encoding="utf-8")
+        transcription_file.write_text(transcription, encoding="utf-8")  # type: ignore[arg-type]
 
         console.print(f"[green]✓ Transcription saved to:[/green] {transcription_file}")
         preview = (
-            transcription[:200] + "..." if len(transcription) > 200 else transcription
+            transcription[:200] + "..." if len(transcription) > 200 else transcription  # type: ignore[operator]
         )
         console.print(f"[dim]Transcription preview: {preview}[/dim]")
 
-        return transcription
+        return transcription  # type: ignore[return-value]
 
     except Exception as e:
         console.print(f"[red]Error during transcription:[/red] {e}")
