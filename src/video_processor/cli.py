@@ -126,6 +126,11 @@ def process(
         "--lang",
         help="Language for generated title/description ('nl' for Dutch, 'en' for English)"
     ),
+    author: Optional[str] = typer.Option(
+        None,
+        "--author",
+        help="Author name to display as subtitle on the thumbnail"
+    ),
 ):
     """
     Process a video file with full pipeline:
@@ -200,7 +205,8 @@ def process(
 
         # Use provided title/subtitle or generated ones
         final_title = title or metadata["title"]
-        final_subtitle = subtitle or metadata["description"]
+        final_description = subtitle or metadata["description"]
+        thumbnail_subtitle = author or final_description
 
         # Step 4: Trim video (if timestamps provided)
         if start_from or end_at:
@@ -227,7 +233,7 @@ def process(
         processed_thumbnail = create_thumbnail_with_text(
             thumbnail_path=thumbnail_path,
             title=final_title,
-            subtitle=final_subtitle,
+            subtitle=thumbnail_subtitle,
             output_path=processing_dir,
             video_width=width,
             video_height=height,
@@ -253,7 +259,7 @@ def process(
         # Save metadata to output directory
         output_metadata = {
             "title": final_title,
-            "description": final_subtitle,
+            "description": final_description,
         }
         output_metadata_path = output_dir / f"{timestamp}_{slugified_title}_metadata.json"
         output_metadata_path.write_text(json.dumps(output_metadata, indent=2), encoding="utf-8")
@@ -263,7 +269,7 @@ def process(
         console.print(Panel(
             f"[bold green]✓ Processing Complete![/bold green]\n\n"
             f"[bold]Title:[/bold] {final_title}\n"
-            f"[bold]Description:[/bold] {final_subtitle}\n\n"
+            f"[bold]Description:[/bold] {final_description}\n\n"
             f"[bold]Output file:[/bold] {output_path}\n"
             f"[bold]Processing files:[/bold] {processing_dir}",
             expand=False
