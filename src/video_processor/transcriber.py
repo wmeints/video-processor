@@ -33,8 +33,11 @@ def get_parakeet_model():
             # This model works well on CPU/MPS for MacBook
             model_name = "nvidia/parakeet-tdt-0.6b-v2"
 
-            # Determine device - prefer MPS on Mac, fallback to CPU
-            if torch.backends.mps.is_available():
+            # Determine device - prefer CUDA, then MPS on Mac, fallback to CPU
+            if torch.cuda.is_available():
+                device = "cuda"
+                console.print("[green]Using CUDA GPU acceleration[/green]")
+            elif torch.backends.mps.is_available():
                 device = "mps"
                 console.print("[green]Using Apple Silicon (MPS) acceleration[/green]")
             else:
@@ -44,7 +47,9 @@ def get_parakeet_model():
             _parakeet_model = nemo_asr.models.ASRModel.from_pretrained(model_name)
 
             # Move model to appropriate device
-            if device == "cpu":
+            if device == "cuda":
+                _parakeet_model = _parakeet_model.cuda()
+            elif device == "cpu":
                 _parakeet_model = _parakeet_model.cpu()
 
             _parakeet_model.eval()
@@ -74,8 +79,19 @@ def get_whisper_model():
         try:
             import whisper
 
+            # Determine device - prefer CUDA, then MPS on Mac, fallback to CPU
+            if torch.cuda.is_available():
+                device = "cuda"
+                console.print("[green]Using CUDA GPU acceleration[/green]")
+            elif torch.backends.mps.is_available():
+                device = "mps"
+                console.print("[green]Using Apple Silicon (MPS) acceleration[/green]")
+            else:
+                device = "cpu"
+                console.print("[yellow]Using CPU for inference[/yellow]")
+
             # Use medium model for good balance of speed and accuracy
-            _whisper_model = whisper.load_model("medium")
+            _whisper_model = whisper.load_model("medium", device=device)
             console.print("[green]✓ Whisper model loaded successfully[/green]")
 
         except Exception as e:
