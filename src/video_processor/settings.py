@@ -11,17 +11,9 @@ def load_settings() -> dict:
     Returns
     -------
     dict
-        Settings dictionary containing api_key and api_url.
-
-    Raises
-    ------
-    FileNotFoundError
-        If the settings file does not exist.
+        Settings dictionary containing api_key and api_url, or empty dict if file doesn't exist.
     """
     config_path = Path.home() / ".config" / "video-processor" / "settings.json"
     if not config_path.exists():
-        raise FileNotFoundError(
-            f"Settings file not found: {config_path}\n"
-            'Create it with: {"api_key": "your-key", "api_url": "https://api.anthropic.com"}'
-        )
+        return {}
     return json.loads(config_path.read_text())
