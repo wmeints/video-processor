@@ -36,24 +36,29 @@ def generate_content_metadata(transcription: str, output_path: Path) -> dict[str
     settings = load_settings()
 
     llm = ChatAnthropic(
-        model="claude-sonnet-4-5-20241022",
+        model="claude-sonnet-4-5",
         api_key=settings["api_key"],
         base_url=settings.get("api_url"),
     )
 
     structured_llm = llm.with_structured_output(VideoMetadata)
 
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", "You generate video metadata from transcriptions."),
-        ("user", """Generate a title and description for this video based on its transcription.
+    prompt = ChatPromptTemplate.from_messages(
+        [
+            ("system", "You generate video metadata from transcriptions."),
+            (
+                "user",
+                """Generate a title and description for this video based on its transcription.
 
 Guidelines:
 - Title: Keep it short and engaging, maximum 140 characters
 - Description: 1-2 sentences summarizing the video content
 
 Transcription:
-{transcription}"""),
-    ])
+{transcription}""",
+            ),
+        ]
+    )
 
     chain = prompt | structured_llm
     result = chain.invoke({"transcription": transcription})
