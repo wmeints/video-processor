@@ -15,7 +15,7 @@ def create_thumbnail_with_text(
     output_path: Path,
     video_width: int,
     video_height: int,
-    duration: float = 5.0,
+    duration: float = 1.5,
 ) -> Path:
     """
     Create a thumbnail image with title and subtitle text overlay.
@@ -35,7 +35,7 @@ def create_thumbnail_with_text(
     video_height : int
         Height of the target video.
     duration : float, optional
-        How long to show the thumbnail in seconds (default is 5.0).
+        How long to show the thumbnail in seconds (default is 1.5).
 
     Returns
     -------
@@ -131,7 +131,7 @@ def add_thumbnail_to_video(
     video_path: Path,
     thumbnail_path: Path,
     output_path: Path,
-    thumbnail_duration: float = 5.0,
+    thumbnail_duration: float = 1.5,
 ) -> Path:
     """
     Add a thumbnail image at the beginning of a video.
@@ -145,7 +145,7 @@ def add_thumbnail_to_video(
     output_path : Path
         Directory where final video will be saved.
     thumbnail_duration : float, optional
-        Duration to show thumbnail in seconds (default is 5.0).
+        Duration to show thumbnail in seconds (default is 1.5).
 
     Returns
     -------

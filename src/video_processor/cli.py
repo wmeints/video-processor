@@ -125,7 +125,7 @@ def process(
         help="End timestamp in mm:ss format (e.g., '05:30' to end at 5 minutes 30 seconds)",
     ),
     thumbnail_duration: float = typer.Option(
-        5.0,
+        1.5,
         "--thumbnail-duration",
         help="Duration to show the thumbnail at the start (seconds)",
     ),
