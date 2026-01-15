@@ -185,6 +185,8 @@ uv run pytest
 uv run video-processor --help
 ```
 
+For detailed technical documentation, see the [Architecture Documentation](docs/architecture/index.md).
+
 ## License
 
 MIT License
