@@ -1,5 +1,7 @@
 # Video Processor
 
+[![CI](https://github.com/wmeints/video-processor/actions/workflows/ci.yml/badge.svg)](https://github.com/wmeints/video-processor/actions/workflows/ci.yml)
+
 A Python CLI tool that processes videos with AI-powered features including audio transcription using Nvidia Parakeet, automatic title/description generation, video trimming, and thumbnail overlay.
 
 ## Features
