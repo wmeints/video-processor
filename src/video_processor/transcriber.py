@@ -79,13 +79,12 @@ def get_whisper_model():
         try:
             import whisper
 
-            # Determine device - prefer CUDA, then MPS on Mac, fallback to CPU
+            # Determine device - prefer CUDA, fallback to CPU
+            # Note: MPS is not used because Whisper has known issues with Apple Silicon MPS
+            # that cause invalid tensor errors during inference
             if torch.cuda.is_available():
                 device = "cuda"
                 console.print("[green]Using CUDA GPU acceleration[/green]")
-            elif torch.backends.mps.is_available():
-                device = "mps"
-                console.print("[green]Using Apple Silicon (MPS) acceleration[/green]")
             else:
                 device = "cpu"
                 console.print("[yellow]Using CPU for inference[/yellow]")
